@@ -91,7 +91,9 @@ func startAllServers(startHC bool) {
 func runServer(srv *server) {
 	err := srv.httpServer.ListenAndServe()
 	if err != nil {
-		fmt.Println(err)
+		if !strings.Contains(err.Error(), "Server closed") {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -121,7 +123,9 @@ func TestHTTPServerShutdowns(t *testing.T) {
 	cslb.PrintDialContext = true
 	cslb.PrintIntercepts = true
 	cslb.PrintSRVLookup = true
+	cslb.PrintDialResults = true
 	cslb.start()
+	defer cslb.stop()
 
 	start := time.Now()
 	get(t, url)        // Should latch on to srv1 as that has the lowest priority
@@ -187,6 +191,7 @@ func TestHTTPHealthCheckFailures(t *testing.T) {
 		PrintHCResults = true
 	*/
 	cslb.start()
+	defer cslb.stop()
 
 	str := get(t, url) // Should be ONE, but we only care that it's something
 	if len(str) == 0 {

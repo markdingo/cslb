@@ -43,6 +43,7 @@ type config struct {
 	PrintDialContext bool // "d" - diagnostics settings are lowercase
 	PrintHCResults   bool // "h"
 	PrintIntercepts  bool // "i"
+	PrintDialResults bool // "r"
 	PrintSRVLookup   bool // "s"
 
 	DisableInterception  bool // "C" - behaviour settings are uppercase
@@ -171,6 +172,8 @@ func newCslb() *cslb {
 			t.PrintHCResults = true
 		case 'i':
 			t.PrintIntercepts = true
+		case 'r':
+			t.PrintDialResults = true
 		case 's':
 			t.PrintSRVLookup = true
 

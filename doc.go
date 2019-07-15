@@ -174,6 +174,7 @@ letter options which have the following meaning:
  'd' - Debug print dialContext calls
  'h' - Debug print Health Check results
  'i' - Debug print intercepted Dial Requests
+ 'r' - Debug print system Dial Context results
  's' - Debug print SRV Lookups
 
  'C' - Disable all Dial Request interception

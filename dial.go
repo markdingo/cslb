@@ -115,7 +115,9 @@ func (t *cslb) dialContext(ctx context.Context, network, address string) (net.Co
 //
 // Results are returned via the result channel as we're started as a separate go-routine.
 func (t *cslb) dialIterate(ctx context.Context, cesrv *ceSRV, network, address string, result chan dialResult) {
-	var ls cslbStats      // We do not set StartTime for nested stats
+	var ls cslbStats // We do not set StartTime for nested stats
+	var lastError error
+
 	defer t.addStats(&ls) // Transfer counters back to the parent when we're done
 	defer close(result)   // We're responsible for closing the dialResult channel
 
@@ -127,16 +129,21 @@ func (t *cslb) dialIterate(ctx context.Context, cesrv *ceSRV, network, address s
 		if dupes[newAddress] { // If we've iterated over all targets, stop
 			ls.DupesStopped++
 			result <- dialResult{nil,
-				fmt.Errorf("cslb: All unique targets failed for %s. Tried: %d", address, len(dupes))}
+				fmt.Errorf("cslb: All unique targets failed for %s/%s. Tried: %d. Last Error: %s",
+					address, newAddress, len(dupes), lastError)}
 			return
 		}
 		dupes[newAddress] = true
 		if t.PrintIntercepts {
-			fmt.Println("cslb.dialContext:SRV", address, "to target", newAddress)
+			fmt.Println("cslb.dialContext:SRV", address, "to target", network, newAddress)
 		}
 		nc, err := t.systemDialContext(ctx, network, newAddress)
+		lastError = err
 		now := time.Now()
 		t.setDialResult(now, srv.Target, int(srv.Port), err)
+		if t.PrintDialResults {
+			fmt.Println("cslb.systemDialContext:Results", network, newAddress, err)
+		}
 		if err == nil { // Success!
 			ls.GoodDials++
 			result <- dialResult{nc, nil}

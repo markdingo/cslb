@@ -24,7 +24,7 @@ func unsetAll() {
 // Test that newCslb notices good env variables. This blows away any env variables that might have
 // been inherited by the test executable.
 func TestCSLBGoodOptions(t *testing.T) {
-	os.Setenv(cslbEnvPrefix+"options", "dhisHCN")
+	os.Setenv(cslbEnvPrefix+"options", "dhirsHCN")
 	os.Setenv(cslbEnvPrefix+"hc_ok", "BIG OK")
 
 	os.Setenv(cslbEnvPrefix+"dial_veto", "5m")
@@ -36,7 +36,8 @@ func TestCSLBGoodOptions(t *testing.T) {
 
 	cslb := newCslb()
 	if !cslb.PrintHCResults || !cslb.PrintIntercepts || !cslb.PrintSRVLookup || !cslb.PrintDialContext ||
-		!cslb.DisableHealthChecks || !cslb.DisableInterception || !cslb.AllowNumericServices {
+		!cslb.PrintDialResults || !cslb.DisableHealthChecks || !cslb.DisableInterception ||
+		!cslb.AllowNumericServices {
 		t.Error("At least one option not set", cslb.config)
 	}
 
@@ -69,7 +70,7 @@ func TestCSLBBadOptions(t *testing.T) {
 	os.Setenv(cslbEnvPrefix+"options", "xxXX")
 
 	os.Setenv(cslbEnvPrefix+"dial_veto", "0s") // Cover
-	os.Setenv(cslbEnvPrefix+"hc_freq", "2h")     // all
+	os.Setenv(cslbEnvPrefix+"hc_freq", "2h")   // all
 	os.Setenv(cslbEnvPrefix+"nxd_ttl", "junk") // error paths
 	os.Setenv(cslbEnvPrefix+"srv_ttl", "junk")
 	os.Setenv(cslbEnvPrefix+"tar_ttl", "junk")
