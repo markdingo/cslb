@@ -112,10 +112,10 @@ func TestHTTPServerShutdowns(t *testing.T) {
 	mr := newMockResolver() // Construct DNS entries used by intercept
 
 	// Randomized order should not affect results
-	mr.appendSRV("http", "tcp", "example.net", "localhost.", 5001, 10, 10) // srv1
-	mr.appendSRV("http", "tcp", "example.net", "localhost.", 5004, 40, 10) // srv4
-	mr.appendSRV("http", "tcp", "example.net", "localhost.", 5003, 20, 10) // srv3
-	mr.appendSRV("http", "tcp", "example.net", "localhost.", 5002, 20, 10) // srv2
+	mr.appendSRV("http", "tcp", "example.net", "localhost", 5001, 10, 10) // srv1
+	mr.appendSRV("http", "tcp", "example.net", "localhost", 5004, 40, 10) // srv4
+	mr.appendSRV("http", "tcp", "example.net", "localhost", 5003, 20, 10) // srv3
+	mr.appendSRV("http", "tcp", "example.net", "localhost", 5002, 20, 10) // srv2
 	url := "http://example.net/"
 
 	cslb := realInit()
@@ -172,10 +172,10 @@ func TestHTTPHealthCheckFailures(t *testing.T) {
 	mr := newMockResolver() // Construct DNS entries used by intercept
 
 	// Randomized order should not affect results
-	mr.appendSRV("http", "tcp", "example.net", "localhost.", 5001, 10, 10) // srv1
-	mr.appendSRV("http", "tcp", "example.net", "localhost.", 5004, 40, 10) // srv4
-	mr.appendSRV("http", "tcp", "example.net", "localhost.", 5003, 20, 10) // srv3
-	mr.appendSRV("http", "tcp", "example.net", "localhost.", 5002, 20, 10) // srv2
+	mr.appendSRV("http", "tcp", "example.net", "localhost", 5001, 10, 10) // srv1
+	mr.appendSRV("http", "tcp", "example.net", "localhost", 5004, 40, 10) // srv4
+	mr.appendSRV("http", "tcp", "example.net", "localhost", 5003, 20, 10) // srv3
+	mr.appendSRV("http", "tcp", "example.net", "localhost", 5002, 20, 10) // srv2
 	mr.appendTXT("_5001._cslb.localhost.", []string{"http", "://127.0.0.1:5001/", "health"})
 	mr.appendTXT("_5002._cslb.localhost.", []string{"http://127.0", ".0.1:5002/health"})
 	mr.appendTXT("_5003._cslb.localhost.", []string{"http://127.0.0.1:500", "3/health"})
