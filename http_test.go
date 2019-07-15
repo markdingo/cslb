@@ -118,6 +118,9 @@ func TestHTTPServerShutdowns(t *testing.T) {
 
 	cslb := realInit()
 	cslb.netResolver = mr
+	cslb.PrintDialContext = true
+	cslb.PrintIntercepts = true
+	cslb.PrintSRVLookup = true
 	cslb.start()
 
 	start := time.Now()
