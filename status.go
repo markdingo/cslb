@@ -215,7 +215,7 @@ func (t *statusServer) generateStatus(w http.ResponseWriter, req *http.Request) 
 		log.Fatal(err)
 	}
 
-	srvStats := t.cslb.srvStore.getStats(t.cslb.healthStore) // Clone all ceSRVs and ancilliary data
+	srvStats := t.cslb.srvStore.getStats(t.cslb.healthStore) // Clone all ceSRVs and ancillary data
 	sort.Slice(srvStats.Srvs, func(i, j int) bool {          // Sort for a low-flicker re-render
 		return srvStats.Srvs[i].CName < srvStats.Srvs[j].CName
 	})

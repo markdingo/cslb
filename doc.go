@@ -248,7 +248,7 @@ Perhaps the biggest caveat of all is that cslb relies on being enabled for all h
 use by your application. If you are importing a package (either directly or indirectly) which
 constructs its own http.Transports then you'll need to modify that package to call cslb.Enable()
 otherwise those http requests will not be intercepted. Of course if the package is making requests
-incidential to the core functionality of your application then maybe it doesn't matter and you can
+incidental to the core functionality of your application then maybe it doesn't matter and you can
 leave them be. Something to be aware of.
 
 -----

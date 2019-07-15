@@ -120,10 +120,13 @@ func TestHTTPServerShutdowns(t *testing.T) {
 
 	cslb := realInit()
 	cslb.netResolver = mr
-	cslb.PrintDialContext = true
-	cslb.PrintIntercepts = true
-	cslb.PrintSRVLookup = true
-	cslb.PrintDialResults = true
+	/*
+		cslb.PrintDialContext = true
+		cslb.PrintIntercepts = true
+		cslb.PrintSRVLookup = true
+		cslb.PrintDialResults = true
+	*/
+
 	cslb.start()
 	defer cslb.stop()
 
@@ -176,20 +179,15 @@ func TestHTTPHealthCheckFailures(t *testing.T) {
 	mr.appendSRV("http", "tcp", "example.net", "localhost", 5004, 40, 10) // srv4
 	mr.appendSRV("http", "tcp", "example.net", "localhost", 5003, 20, 10) // srv3
 	mr.appendSRV("http", "tcp", "example.net", "localhost", 5002, 20, 10) // srv2
-	mr.appendTXT("_5001._cslb.localhost.", []string{"http", "://127.0.0.1:5001/", "health"})
-	mr.appendTXT("_5002._cslb.localhost.", []string{"http://127.0", ".0.1:5002/health"})
-	mr.appendTXT("_5003._cslb.localhost.", []string{"http://127.0.0.1:500", "3/health"})
-	mr.appendTXT("_5004._cslb.localhost.", []string{"http://127.0.0.1:5004/healt", "h"})
+	mr.appendTXT("_5001._cslb.localhost", []string{"http", "://127.0.0.1:5001/", "health"})
+	mr.appendTXT("_5002._cslb.localhost", []string{"http://127.0", ".0.1:5002/health"})
+	mr.appendTXT("_5003._cslb.localhost", []string{"http://127.0.0.1:500", "3/health"})
+	mr.appendTXT("_5004._cslb.localhost", []string{"http://127.0.0.1:5004/healt", "h"})
 	url := "http://example.net/"
 
 	cslb := realInit()
 	cslb.netResolver = mr
 	cslb.HealthCheckFrequency = time.Second // HC should hit every second
-
-	/*
-		printServerSide = true
-		PrintHCResults = true
-	*/
 	cslb.start()
 	defer cslb.stop()
 
@@ -202,7 +200,7 @@ func TestHTTPHealthCheckFailures(t *testing.T) {
 	// healthStore which in turn would have looked up the TXT RRs for the HC URLs and started
 	// running the HCs. Since the HCs have "OK" set they should be setting the targets as good -
 	// even if we set them down the subsequent HC should over-ride them. After all, a connection
-	// is just a TCP 3-way handshake, not a sucessful HTTP exchange.
+	// is just a TCP 3-way handshake, not a successful HTTP exchange.
 
 	// To test that the HCs are running we should see the hcHits increase from zero
 
