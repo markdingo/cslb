@@ -9,7 +9,7 @@ server-side load-balancers.
 In many cases the only action needed to take advantage of cslb is to import the package and add an
 SRV entry to your DNS. At that point, on behalf of your application, cslb automatically deals with
 failed servers and spreads load across serving targets according to your load-distribution rules. In
-additional, once you have cslb in place you can also run a `canary` alerting service which can
+addition, once you have cslb in place you can also run a `canary` alerting service which can
 notify you when clients are failing to reach their correct services.
 
 The primary goal of cslb is to make client-side load-balancing a no-brainer for your Go application.
@@ -27,7 +27,7 @@ Cslb is a standard Go package installed in the usual way:
 $ go get -u github.com/markdingo/cslb
 ```
 
-At this stage, cslb has no package dependencies beyond the standard packages shipped with the Go
+At this stage cslb has no package dependencies beyond the standard packages shipped with the Go
 compiler. cslb requires Go 1.12.x or greater.
 
 ### Application Changes
@@ -98,7 +98,7 @@ server-side load-balancer deployment by making the load-balancers targets in an 
 In addition to the passive collection of fail-over data based on `DialContext` results, cslb has an
 optional "active mode" where a per-target health-check URL is periodically polled to determine the
 health of a target. If a health-check URL fails, that target is removed from the target candidate
-list for a configured time period. The health-check URL is defined as a TXT RR in the DNS. The
+list for a configured time period. The health-check URL is defined by a TXT RR in the DNS. The
 package documentation describes the naming convention and syntax.
 
 ### Status Web Page
