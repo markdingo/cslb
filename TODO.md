@@ -21,7 +21,7 @@ Seems obvious, but which target did cslb use?
 
 ### Re-fetch active SRVs
 
-To avoid adding DNS delays to application requests, cslb could pre-fetch active SRVs in anticipation
+To avoid adding DNS delays to application requests, cslb could re-fetch active SRVs in anticipation
 of their reuse. Triggering a fetch, say, five seconds or so before expiry should do the trick.
 
 ### Placing a weight in the health-check response
@@ -36,7 +36,7 @@ weights. For example if 2 out of 3 targets are returning 50% utilization and the
 
 Server-side load-balancers have traditionally offered a variety of different selection algorithms,
 such as least-load, least-latency, round-robin, least-connections and more. In the clients case we
-can also add network latency to a desirable attribute to consider. Could some of these algorithms be
+can also add network latency as a desirable attribute to consider. Could some of these algorithms be
 incorporated into cslb? A service operator could communicate a preferred strategy by, e.g., encoding
 algorithm information into weights using an unlikely signal value.
 
@@ -56,8 +56,8 @@ s2      | 15 << 8 + 0x1F << 3 + 0 | = 4088 | 14.6
 s3      | 20 << 8 + 0x1F << 3 + 0 | = 5368 | 19.1
 
 The rationale for having the original weight in the top eight bits as opposed to the more obvious
-bottom eight bits is that implementations that do not understand the encoding will still mostly work
-as the weighting still represents approximately the same ratios as the original values.
+bottom eight bits is that implementations that do not understand this encoding will still work as
+the encoded weights still approximate the same ratios as the original values.
 
 
 ### ------
