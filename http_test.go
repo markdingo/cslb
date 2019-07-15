@@ -89,7 +89,10 @@ func startAllServers(startHC bool) {
 }
 
 func runServer(srv *server) {
-	srv.httpServer.ListenAndServe()
+	err := srv.httpServer.ListenAndServe()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func stopAllServers() {
@@ -102,6 +105,7 @@ func stopAllServers() {
 // Test cslb with servers shutting down and thus having connections fail. This is a real E2E test.
 func TestHTTPServerShutdowns(t *testing.T) {
 	startAllServers(false)
+	defer stopAllServers()
 
 	mr := newMockResolver() // Construct DNS entries used by intercept
 
@@ -151,13 +155,12 @@ func TestHTTPServerShutdowns(t *testing.T) {
 	if elapse > time.Second {
 		t.Error("Get after srv1, 2 &3 downed took way too long", elapse)
 	}
-
-	stopAllServers() // Clean up for other tests
 }
 
 // Test cslb with real servers and running HC on them to make sure HC turns off "downed" servers
 func TestHTTPHealthCheckFailures(t *testing.T) {
 	startAllServers(true)
+	defer stopAllServers()
 
 	mr := newMockResolver() // Construct DNS entries used by intercept
 
@@ -238,8 +241,6 @@ func TestHTTPHealthCheckFailures(t *testing.T) {
 	if !strings.Contains(str, "FOUR") {
 		t.Error("Expected srv4 to respond with srv2, 3 HC down, but got", trunc(str))
 	}
-
-	stopAllServers()
 }
 
 func get(t *testing.T, url string) string {
