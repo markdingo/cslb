@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Extract version info from the change log
+# Extract version and release date info from the ChangeLog.md
 
 cl=$1
 if [ -z "$cl" ]; then
@@ -21,7 +21,9 @@ set -- $recent
 version=$2
 date=$4
 printf 'package cslb\n\nconst (\n'
-printf '\tVersion     = "%s" // See ChangeLog.md for history\n' "${version}"
+printf '\t// Version is auto-generated from ChangeLog.md\n'
+printf '\tVersion = "%s"\n' "${version}"
+printf '\t// ReleaseDate is also auto-generated from ChangeLog.md\n'
 printf '\tReleaseDate = "%s"\n' "${date}"
 printf ')\n'
 

@@ -1,6 +1,8 @@
 package cslb
 
 const (
-	Version     = "v0.0.1" // See ChangeLog.md for history
-	ReleaseDate = "2019-xx-xx"
+	// Version is auto-generated from ChangeLog.md
+	Version = "v0.0.1"
+	// ReleaseDate is also auto-generated from ChangeLog.md
+	ReleaseDate = "2019-07-15"
 )
