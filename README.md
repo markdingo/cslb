@@ -107,6 +107,13 @@ Insights into the behaviour of cslb within your application are available via an
 page. When activated via an environment variable the web page provides statistics on intercepted
 `DialContext` Requests, information on cached SRV and healthcheck results.
 
+### Community
+
+If you have any problems using cslb or suggestions on how it can do a better job, don't hesitate to
+create an [issue](https://github.com/markdingo/cslb/issues) or email the
+[authors](https://github.com/markdingo/cslb/blob/master/AUTHORS) directly. This package can only
+improve with your feedback.
+
 ### Copyright and License
 
 Cslb is Copyright :copyright: 2019 Mark Delany. This software  is licensed under the BSD 2-Clause "Simplified" License.
