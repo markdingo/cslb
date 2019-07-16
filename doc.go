@@ -1,5 +1,5 @@
 /*
-Package cslb provides transparent Client Side Load Balancing for Go programs.
+Package cslb provides transparent HTTP/HTTPS Client Side Load Balancing for Go programs.
 
 Cslb intercepts "net/http" Dial Requests and re-directs them to a preferred set of target hosts
 based on the load balancing configuration expressed in DNS SRV and TXT Resource Records (RRs).
