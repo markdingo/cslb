@@ -48,7 +48,7 @@ the cslb.Enable() function, i.e.:
 
 The cslb.Enable() function replaces http.Transport.DialContext with its own intercept function.
 
-WHY USE CSLB?
+WHEN TO USE CSLB
 
 Server-side load-balancers are no panacea. They add deployment and diagnostic complexity, cost,
 throughput constraints and become an additional point of possible failure.
