@@ -229,9 +229,8 @@ ipv6 connections simultaneously which maximizes responsiveness for the client.
 
 Third, consider a "canary" target as a low preference (highest numeric value SRV priority)
 target. If this "canary" target is accessed by cslb clients it tells you they are having trouble
-reaching their "correct" targets. Being able to run a "canary" service is one of the side-benefits
-of cslb and SRVs.
-
+reaching their "real" targets. Being able to run a "canary" service is one of the side-benefits of
+cslb and SRVs.
 
 CAVEATS
 

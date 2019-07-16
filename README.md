@@ -28,7 +28,7 @@ $ go get -u github.com/markdingo/cslb
 ```
 
 At this stage cslb has no package dependencies beyond the standard packages shipped with the Go
-compiler. cslb requires Go 1.12.x or greater.
+compiler. Cslb requires Go 1.12.x or greater.
 
 ### Application Changes
 
