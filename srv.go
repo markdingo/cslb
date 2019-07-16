@@ -1,9 +1,9 @@
 package cslb
 
 /*
-The srv struct caches SRV RRs. It is structured to make life easy for bestTarget() as that is
-presumed to be the most heavily used function in this package. The structure is
-cePtr->cePriority->ceTarget where cePriority contains all matching priorities and ceTarget contains
+The srv structs cache SRV RRs. They are structured to make life easy for bestTarget() as that is
+presumed to be the most heavily used function in this package. The relationship between structs is:
+ceSRV->cePriority->ceTarget where cePriority contains all matching priorities and ceTarget contains
 all targets with that priority.
 */
 
@@ -133,7 +133,7 @@ func (t *cslb) lookupSRV(ctx context.Context, now time.Time, service, proto, dom
 // RFC2782 says that "weights of 0 should have a very small chance of being selected" without
 // defining "very small". They way we achieve this as well as make our selection algorithm simple is
 // to give them collectively an effective weight of 0.1% of the total weights so that all zero
-// targets will on average get 1/1000th of traffic. That seems like "very small chance" to me.
+// targets will on average get 1/1000th of traffic. That seems like a "very small chance" to me.
 func (t *ceSRV) populate(srvs []*net.SRV) {
 	sort.Slice(srvs, func(i, j int) bool { return srvs[i].Priority < srvs[j].Priority })
 	var cep *cePriority // Ptr to current priority or nil if none yet
@@ -167,7 +167,7 @@ func (t *ceSRV) populate(srvs []*net.SRV) {
 
 		verySmall := cep.totalWeight / smallChanceMultiplier
 		verySmall = (verySmall + zeroWeightEntryCount - 1) / zeroWeightEntryCount
-		if verySmall == 0 { // This can be true of totalWeight is very small or zero!
+		if verySmall == 0 { // This can be true if totalWeight is very small or zero!
 			verySmall = 1
 		}
 		for _, cet := range cep.targets {
@@ -180,8 +180,8 @@ func (t *ceSRV) populate(srvs []*net.SRV) {
 }
 
 // bestTarget selects the "best" target to try and connect to based on the SRV selection algorithm
-// and the health of the targets. That is, pick the SRV set with the lowest-numbered priority
-// first. If all those targets are unavailable then pick the SRV set with the next lowest-numbered
+// and the health of the targets. That is, pick the SRV set with the lowest-numerical priority
+// first. If all those targets are unavailable then pick the SRV set with the next lowest-numerical
 // priority. Within a given priority weight is used to distribute load. E.g. a weight list of a=1,
 // b=2, c=3 would ideally have 12 requests distributed such that 2 go to a, 4 go to b and 6 go to
 // c. If all targets are "bad" pick the least-worst target to return. The least-worst is the target
@@ -196,7 +196,7 @@ func (t *ceSRV) populate(srvs []*net.SRV) {
 //
 // - Highest Priority in good health in weight range - first choice within priority
 // - First target in highest Priority in good health - second choice within priority
-// - Same thing for each Priority down if none of the previous priority are in good health
+// - Same thing for each Priority down if none of the previous priorities are in good health
 // - Target with soonest next connection attempt regardless of priority or weight - least worst
 //
 // The caller should always check for a nil return, the other values in the returned SRV are mostly
@@ -250,10 +250,10 @@ func (t *cslb) bestTarget(cesrv *ceSRV) (srv *net.SRV) {
 	// Didn't find *any* healthy targets so search over *all* targets for least-worst. We don't
 	// expect this to occur very often so the search loop is run a second time rather than add
 	// complexity to the relatively simple search loop above. The least-worst target has the
-	// smallest nextDialAttempt.  Priority and weight are ignored as there is no point is
-	// considering a higher priority target which has a nextDialAttempt way off into the
-	// future as that means it's *just* failed whereas one that's a millisecond away from now
-	// has had the longest time period to "come good".
+	// soonest nextDialAttempt. Priority and weight are ignored as there is no point in
+	// considering a higher priority target which has a nextDialAttempt way off into the future
+	// as that means it's *just* failed whereas one that's a millisecond away from now has had
+	// the longest time period to "come good".
 
 	var smallestLeastWorst time.Time
 	for _, cep := range cesrv.priorities {
@@ -281,11 +281,11 @@ func (t *cslb) bestTarget(cesrv *ceSRV) (srv *net.SRV) {
 	return
 }
 
-// uniqueTargetKeys returns a slice of all unique targets keys in the SRV (a key is host:port) The
+// uniqueTargetKeys returns a slice of all unique targets keys in the SRV (a key is host:port). The
 // SRV might actually have more targets than this count if some of the targets are identical. This
 // shouldn't occur in a single well-constructed SRV arrangement but targets might be shared across
 // other SRVs so we've generalized the need to cater for that such that a target is an independent
-// beast that just happens to be attached to one or more SRVs.
+// beast which just happens to be attached to one or more SRVs.
 func (t *ceSRV) uniqueTargetKeys() (tSlice []string) {
 	dupes := make(map[string]bool)
 	for _, cep := range t.priorities {

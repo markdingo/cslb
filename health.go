@@ -1,16 +1,15 @@
 package cslb
 
 /*
-
 The health structs track the health of the target systems in terms of whether we have been able to
-establish successful connections to them or not and what the results of the healthcheck is - if one
+establish successful connections to them or not and what the results of the health check is - if one
 is running.
 
-The healthcheck URL is used as by a background check to pre-determine the state of the target rather
-than waiting for a failed connection. Defining a healthcheck URL is recommended as a successful
-connect() does not necessarily imply a successful service - it merely implies a successful TCP
-setup. Furthermore a healthcheck URL can be used to administratively turn a target on and off. Or
-take it "out of rotation" in devop parlance.
+The health check URL is used as by a background check to pre-determine the state of the target
+rather than waiting for a failed connection. Defining a health check URL is recommended as a
+successful connect() does not necessarily imply a successful service - it merely implies a
+successful TCP setup. Furthermore a health check URL can be used to administratively turn a target
+on and off. Or take it "out of rotation" in devop parlance.
 
 Most of these functions are actually cslb functions rather than healthCache functions because they
 need access to cslb variables such as config and resolver. This could be restructured to bring all
@@ -34,7 +33,7 @@ import (
 type healthCache struct {
 	sync.RWMutex                      // Protects everything within this struct
 	done         chan bool            // Shuts down the cache cleaner
-	cache        map[string]*ceHealth // The key  is ToLower(target:port) - use makeHealthStoreKey()
+	cache        map[string]*ceHealth // The key is ToLower(target:port) - use makeHealthStoreKey()
 }
 
 type ceHealth struct {

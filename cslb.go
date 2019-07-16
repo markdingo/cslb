@@ -89,7 +89,7 @@ func (t *cslb) cloneStats() cslbStats {
 
 // addStats safely transfers a local copy of the cslbStats to the cslb's version. Rather than
 // updating a cslb's stats directly, callers tend to update a local version of cslbStats then
-// transfer it via addStats() to minimize locking calls (mor more likely minimizing the risk of
+// transfer it via addStats() to minimize locking calls (or more likely minimizing the risk of
 // forgetting a locking call).
 func (t *cslb) addStats(ls *cslbStats) {
 	t.statsMu.Lock()
@@ -109,8 +109,8 @@ func (t *cslb) addStats(ls *cslbStats) {
 	t.Deadline += ls.Deadline
 }
 
-// cslb is the main structure which holds all the state for the life cslb for the application. The
-// main reason it's a struct rather than a big lump of glocals is to make it easy to test.
+// cslb is the main structure which holds all the state for the life of the application. The main
+// reason it's a struct rather than a big lump of globals is to make it easy to test.
 type cslb struct {
 	config
 

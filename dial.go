@@ -20,9 +20,9 @@ type dialResult struct {
 // tried in an effort to select a functioning target.
 //
 // dialContext effectively implements what http clients should have implemented years ago but the
-// http crowd seem very reluctant to add latency to each web request by precending it with an
-// additional DNS lookup so it hasn't happened thus far. Maybe the proposed HTTPSSVC, or whatever
-// it ends up being, will solve that problem? We'll see.
+// http crowd seem very reluctant to add latency to each web request by preceding it with an
+// additional DNS lookup so it hasn't happened thus far. Maybe the proposed HTTPSSVC, or whatever it
+// ends up being, will solve that problem? We'll see.
 //
 // If the supplied context contains a deadline dialContext honors that deadline, otherwise it
 // creates a "WithTimeout" context using the configure deadline. Unlike net.Dialer.DialContext the
@@ -45,11 +45,11 @@ func (t *cslb) dialContext(ctx context.Context, network, address string) (net.Co
 
 	// Convert port back to a service. This is error prone as there is not necessarily any
 	// correlation between the two. E.g. with http.Get("https://example.net:80/resource") the
-	// conversion results in a look up _http._tcp.example.net which is unlikely to be what the
-	// caller wanted, but what can you do? The problem is that the scheme on the original URL is
-	// not visible to us in any way. Hardly surprising since net.DialContent is a generalized
-	// service. The only real solution is if the net/http package were to introduce it's own
-	// dialer interface which includes scheme and port.
+	// conversion results in a look up of _http._tcp.example.net which is unlikely to be what
+	// the caller wanted, but what can you do? The problem is that the scheme on the original
+	// URL is not visible to us in any way. Hardly surprising since net.DialContent is a
+	// generalized service. The only real solution is if the net/http package were to introduce
+	// its own dialer interface which includes scheme and port.
 
 	service := ""
 	switch port { // Map services that we can enable (which is only net/http for now)

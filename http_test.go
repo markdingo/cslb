@@ -17,7 +17,7 @@ type server struct {
 	name       string
 	port       int
 	get        string // Returned from a regular GET
-	hc         string // Returned on the healthcheck URL
+	hc         string // Returned on the health check URL
 	getHits    int
 	hcHits     int
 	httpServer *http.Server
