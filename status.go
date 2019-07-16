@@ -1,5 +1,13 @@
 package cslb
 
+/*
+The status server presents a read-only web page of insights into cslb. This includes the contents of
+the SRV and health caches as well as the results of any health checks and connection attempts.
+
+There are default html templates uses to render the pages but most of these can be over-ridden with
+user-supplied templates defined with the "cslb_templates" environment variable.
+*/
+
 import (
 	"context"
 	"html/template"
@@ -103,7 +111,7 @@ const (
 `
 
 	trailerStr = `
-<div><hr><font size=-1>Client-Side Load Balancing {{.Version}} brought to you by
+<div><hr><font size=-1>Client-Side Load Balancing {{.Version}} released on {{.ReleaseDate}}. Brought to you by
 <a href=https://github/markdingo/cslb>https://github/markdingo/cslb</a> at {{.RunAt}}</font>
 </body></html>
 `
@@ -145,8 +153,9 @@ func (t *statusServer) stop(ctx context.Context) {
 }
 
 // loadTemplates performs a one-time parse of all the internal templates needed for the status
-// page. It also attempts to load any glob templates configured cia cslb. If they fail tho it's just
-// a warning as the default templates will still be active.
+// page. It also attempts to "glob" load any template files found in the directory identified by the
+// "cslb_templates" environment variable. If the glob load fails it only causes a warning as the
+// default templates will still function..
 func (t *statusServer) loadTemplates() error {
 	t.allTmpl = template.New("")
 	_, err := t.allTmpl.Parse(configStr)
@@ -180,7 +189,7 @@ func (t *statusServer) loadTemplates() error {
 	return nil
 }
 
-// Aggregate structs are conveniences so we can render derived values in the same template.
+// Aggregate structs are conveniences so we can render derived values in a single template.
 
 type cslbAggConfig struct {
 	StartTime   time.Time
@@ -189,6 +198,12 @@ type cslbAggConfig struct {
 	DialContext int
 	Executable  string
 	config
+}
+
+type cslbAggTrailer struct {
+	Version     string
+	ReleaseDate string
+	RunAt       string
 }
 
 // generateStatus writes the status page out. It's quite extensive because everything is on one page.
@@ -251,15 +266,10 @@ func (t *statusServer) generateStatus(w http.ResponseWriter, req *http.Request) 
 		log.Fatal(err)
 	}
 
-	{
-		type trailer struct {
-			Version string
-			RunAt   string
-		}
-		tv := trailer{Version: Version, RunAt: time.Now().Format("2006-01-02T15:04:05Z07:00")}
-		err = t.trailerTmpl.Execute(w, tv)
-		if err != nil {
-			log.Fatal(err)
-		}
+	tv := cslbAggTrailer{Version: Version, ReleaseDate: ReleaseDate,
+		RunAt: time.Now().Format("2006-01-02T15:04:05Z07:00")}
+	err = t.trailerTmpl.Execute(w, tv)
+	if err != nil {
+		log.Fatal(err)
 	}
 }

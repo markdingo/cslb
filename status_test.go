@@ -48,8 +48,8 @@ func TestStatusStartStop(t *testing.T) {
 		t.Error("GET of status page did not return title 'Client Side Load Balancing'", trimTo(str, 200))
 	}
 
-	if !strings.Contains(str, "brought to you by") {
-		t.Error("GET of status page did not return trailer 'brought to you by'", trimTo(str, 200))
+	if !strings.Contains(str, "Brought to you by") {
+		t.Error("GET of status page did not return trailer 'Brought to you by'", trimTo(str, 200))
 	}
 	ss.stop(context.Background())
 	time.Sleep(time.Second)
