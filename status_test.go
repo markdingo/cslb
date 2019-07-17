@@ -65,7 +65,9 @@ func TestStatusCacheEntries(t *testing.T) {
 	cslb.InterceptTimeout = time.Second
 	cslb.StatusServerAddress = sssListen
 	mr := newMockResolver()
+	mr.appendSRV("http", "tcp", "localhost", "localhost", 50087, 1, 1)
 	mr.appendSRV("http", "tcp", "localhost", "localhost", 50088, 1, 1)
+	mr.appendSRV("http", "tcp", "localhost", "localhost", 50089, 1, 1)
 	mr.appendSRV("https", "tcp", "notfound.example.net", "", 0, 0, 0)
 	mr.appendTXT("_50088"+cslb.HealthCheckTXTPrefix+"localhost", []string{"http://google.com"})
 	cslb.netResolver = mr
@@ -74,6 +76,7 @@ func TestStatusCacheEntries(t *testing.T) {
 
 	cslb.dialContext(context.Background(), "tcp", "localhost:80")
 	cslb.dialContext(context.Background(), "tcp", "notfound.example.net:443")
+	cslb.dialContext(context.Background(), "tcp", "nxdomain.example.net:80")
 
 	time.Sleep(2 * time.Second) // Give both status server and HC a chance to get started
 
