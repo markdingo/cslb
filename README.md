@@ -17,6 +17,7 @@ The primary goal of cslb is to make client-side load-balancing a no-brainer for 
 [![Build Status](https://travis-ci.org/markdingo/cslb.svg?branch=master)](https://travis-ci.org/markdingo/cslb)
 [![Go Report Card](https://goreportcard.com/badge/github.com/markdingo/cslb)](https://goreportcard.com/report/github.com/markdingo/cslb)
 [![codecov](https://codecov.io/gh/markdingo/cslb/branch/master/graph/badge.svg)](https://codecov.io/gh/markdingo/cslb)
+[![](https://godoc.org/github.com/markdingo/cslb?status.svg)](https://godoc.org/github.com/markdingo/cslb)
 
 
 ### Installation
