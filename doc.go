@@ -27,7 +27,7 @@ snippet:
  func main() {
         resp, err := http.Get("http://example.net/resource")
 
-the Dial Request made by the http.Get is intercepted and processed by cslb.
+the Dial Request made by http.Get is intercepted and processed by cslb.
 
 NON DEFAULT USAGE
 
@@ -77,19 +77,18 @@ RRs exist, cslb passes the Dial Request on to net.DialContext.
 RULES OF INTERCEPTION
 
 Cslb has specific rules about when interception occurs. It normally only considers intercepting port
-80 and port 443 however if the cslb_allports environment variable is set, cslb intercepts
+80 and port 443 however if the "cslb_allports" environment variable is set, cslb intercepts
 non-standard HTTP ports and maps them to numeric service names. For example http://example.net:8080
-will get mapped to _8080._tcp.example.net as the SRV qName to resolve.
+gets mapped to _8080._tcp.example.net as the SRV name to resolve.
 
 
 ACTIVE HEALTH CHECKS
 
-While cslb runs passively by aching the results of previous Dial Requests to track the health of
-targets, it can also run actively by periodically performing health checks on targets. This is useful
-as an administrator can control health check behaviour to move a target "in and out of rotation"
-without changing DNS entries and waiting for TTLs to age out. Health checks are also likely to make
-the application a little more responsive as they are less likely to make a dial attempt to a target
-that is not working.
+While cslb runs passively by caching the results of previous Dial Requests, it can also run actively
+by periodically performing health checks on targets. This is useful as an administrator can control
+health check behaviour to move a target "in and out of rotation" without changing DNS entries and
+waiting for TTLs to age out. Health checks are also likely to make the application a little more
+responsive as they are less likely to make a dial attempt to a target that is not working.
 
 Active health checking is enabled by the presence of a TXT RR in the sub-domain "_$port._cslb" of
 the target. E.g. if the SRV target is "s1.example.net:80" then cslb looks for the TXT RR at
@@ -102,8 +101,8 @@ URL to a central monitoring system which performs complicated application level 
 performance monitoring. Or it could be a URL on the target system itself.
 
 A health check is considered successful when a GET of the URL returns a 200 status and the content
-contains the uppercase text "OK" somewhere in the body (See the cslb_hc_ok environment variable for
-how this can be modified). Unless both those conditions are met the target is considered
+contains the uppercase text "OK" somewhere in the body (See the "cslb_hc_ok" environment variable
+for how this can be modified). Unless both those conditions are met the target is considered
 unavailable.
 
 Active health checks cease once a target becomes idle for too long and health check Dial Requests
