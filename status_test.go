@@ -93,3 +93,27 @@ func TestStatusCacheEntries(t *testing.T) {
 		}
 	}
 }
+
+// Test template globbing
+func TestStatusGlob(t *testing.T) {
+	cslb := newCslb()
+	cslb.StatusServerTemplates = "testdata/templates/*.tmpl"
+	cslb.StatusServerAddress = sssListen
+	ss := newStatusServer(cslb) // Should load the testdata templates
+	go ss.start()
+	time.Sleep(time.Second) // Give server a chance to start
+	resp, err := http.Get("http://" + sssListen + "/")
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	str := string(body)
+	if !strings.Contains(str, "empty but nonetheless functional") {
+		t.Error("GET of status page did not return 'empty but nonetheless functional' from template file",
+			trimTo(str, 200))
+	}
+}

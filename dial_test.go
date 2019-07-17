@@ -232,9 +232,16 @@ func TestDialDeadline(t *testing.T) {
 	}
 }
 
-// Test that context cancel is honored.
+// Test that context cancel is honored. Also exercise all the print functions while we're here.
 func TestDialCancel(t *testing.T) {
 	cslb := realInit()
+
+	cslb.PrintDialContext = true
+	cslb.PrintHCResults = true
+	cslb.PrintIntercepts = true
+	cslb.PrintDialResults = true
+	cslb.PrintSRVLookup = true
+
 	mr := newMockResolver() // Empty DNS
 	cslb.netResolver = mr
 	dialer := newMockDialer()
