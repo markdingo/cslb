@@ -76,8 +76,8 @@ const (
 <h3>SRV DNS Cache</h3>
 <table border=1>
 <tr><th>CName</th><th align=right>Expires</th><th align=right>Lookups</th>
-<th>Priority</th><th>Weight</th><th>Port</th><th>Target</th>
-<th>GoodDials</th><th>FailedDials</th><th align=center>IsGood</th></tr>
+<th>Priority</th><th>Internal Weight</th><th>Port</th><th>Target</th>
+<th>Good Dials</th><th>Failed Dials</th><th align=center>IsGood</th></tr>
 {{range .Srvs}}
 <tr>
 <td>{{.CName}}</td><td align=right>{{.Expires}}</td></td><td align=right>{{.Lookups}}</td>
