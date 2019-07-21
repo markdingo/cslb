@@ -10,7 +10,8 @@ fmt:
 	gofmt -s -w `find . -name '*.go' -type f -print`
 
 .PHONY: test
-	fo test
+test:
+	go test ./...
 
 .PHONY: version
 version:
