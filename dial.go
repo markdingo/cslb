@@ -27,10 +27,10 @@ type dialResult struct {
 // If the supplied context contains a deadline dialContext honors that deadline, otherwise it
 // creates a "WithTimeout" context using the configure deadline. Unlike net.Dialer.DialContext the
 // deadline is not amortized across all targets. In part because we want to prefer the earlier
-// targets because that's how we've been instructed via the DNS; in part because we don't really
+// targets because that's how we've been instructed via the SRV; in part because we don't really
 // know how many address records there are across the different targets and finally in part because
 // a large number of targets implies an absurdly small amortised deadline per target - particularly
-// as net.Dialer.DialContext is doing its own amortization per target of our amortization. All of
+// as net.Dialer.DialContext is doing yet more amortization per target of our amortization. All of
 // which can be coded around to arrive at a workable compromise, but it's unclear the additional
 // complexity buys us very much and determining the benefit is tough.
 func (t *cslb) dialContext(ctx context.Context, network, address string) (net.Conn, error) {
@@ -155,9 +155,12 @@ func (t *cslb) dialIterate(ctx context.Context, cesrv *ceSRV, network, address s
 	// NOT REACHED
 }
 
-// extractHostPort extracts the hostname from the address, if there is one.  Possible inputs are:
+// extractHostPort extracts the hostname from the address, if there is one. Possible inputs are:
 // example.com:80, 127.0.0.1:80 and [::1]:443 only the first of which returns a non-zero host of
-// "example.com".
+// "example.com". Which exemplifies a main difference from net.SplitHostPort in that IP addresses
+// are not considered valid hosts for splitting purposes, nor is there an error return as the caller
+// doesn't want to impose their own (possibly different) constraints on an address which is
+// interpreted by net.DialContext.
 func extractHostPort(address string) (host, port string) {
 	if address[0] == '[' { // Does it look like a wrapped ipv6 address?
 		return
