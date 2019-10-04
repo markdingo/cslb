@@ -75,7 +75,7 @@ func (t *srvCache) stop() {
 	close(t.done)
 }
 
-// lookupSRV looks up the CSLB SRV RR for the domain. First it tries looking in the cache and if not
+// lookupSRV looks up the SRV RR for the domain. First it tries looking in the cache and if not
 // there, the DNS is consulted. The qName is of the form ToLower(_http._tcp.$domain) where "http" is
 // the service and "tcp" is the proto. The cache is updated with the results of the DNS lookup.
 //
@@ -96,7 +96,7 @@ func (t *cslb) lookupSRV(ctx context.Context, now time.Time, service, proto, dom
 		t.srvStore.RUnlock()
 		return cesrv
 	}
-	t.srvStore.RUnlock() // Don't hold across a possible DNS lookup
+	t.srvStore.RUnlock() // Don't hold mutex across a possible DNS lookup
 
 	cesrv = &ceSRV{expires: now.Add(t.NotFoundSRVTTL), lookups: 1} // Assume NXDomain
 	_, srvList, _ := t.netResolver.LookupSRV(ctx, "", "", key)
@@ -182,14 +182,16 @@ func (t *ceSRV) populate(srvs []*net.SRV) {
 // bestTarget selects the "best" target to try and connect to based on the SRV selection algorithm
 // and the health of the targets. That is, pick the SRV set with the lowest-numerical priority
 // first. If all those targets are unavailable then pick the SRV set with the next lowest-numerical
-// priority. Within a given priority weight is used to distribute load. E.g. a weight list of a=1,
-// b=2, c=3 would ideally have 12 requests distributed such that 2 go to a, 4 go to b and 6 go to
-// c. If all targets are "bad" pick the least-worst target to return. The least-worst is the target
-// with a nextDialAttempt that is closest to now.
+// priority. Within the selected priority weight is used to distribute load. E.g. a weight list of
+// a=1, b=2, c=3 would ideally have 12 requests distributed such that 2 go to a, 4 go to b and 6 go
+// to c.
+//
+// If all targets in all priorities are "bad" due to health checks or connection failures, pick the
+// the least-worst target which is the target with a nextDialAttempt closest to now.
 //
 // A synthesized SRV is always returned if there are any targets in the SRV. In the case of the
 // least-worst return, maybe the caller will get lucky and the connection will come good this time?
-// Or maybe they won't get lucky but at least they get to see a connection failed outcome and can
+// Or maybe they won't get lucky but at least they get to see a "connection failed" outcome and can
 // report it to something or someone.
 //
 // To summarize, the returned SRV will be one of the following in the order shown:

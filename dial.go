@@ -25,7 +25,7 @@ type dialResult struct {
 // ends up being, will solve that problem? We'll see.
 //
 // If the supplied context contains a deadline dialContext honors that deadline, otherwise it
-// creates a "WithTimeout" context using the configure deadline. Unlike net.Dialer.DialContext the
+// creates a "WithTimeout" context using the configure timeout. Unlike net.Dialer.DialContext the
 // deadline is not amortized across all targets. In part because we want to prefer the earlier
 // targets because that's how we've been instructed via the SRV; in part because we don't really
 // know how many address records there are across the different targets and finally in part because
@@ -43,13 +43,14 @@ func (t *cslb) dialContext(ctx context.Context, network, address string) (net.Co
 		fmt.Println("cslb.dialContext:intercept", network, address, "gives", host, "and", port)
 	}
 
-	// Convert port back to a service. This is error prone as there is not necessarily any
-	// correlation between the two. E.g. with http.Get("https://example.net:80/resource") the
-	// conversion results in a look up of _http._tcp.example.net which is unlikely to be what
-	// the caller wanted, but what can you do? The problem is that the scheme on the original
-	// URL is not visible to us in any way. Hardly surprising since net.DialContent is a
-	// generalized service. The only real solution is if the net/http package were to introduce
-	// its own dialer interface which includes scheme and port.
+	// Convert the numeric port number back to a service name to formulate the SRV qName. This
+	// is error prone as there is not necessarily any correlation between the two. E.g. with
+	// http.Get("https://example.net:80/resource") the conversion results in qName of
+	// _http._tcp.example.net which is unlikely to be what the caller wanted, but what can you
+	// do? The problem is that the scheme on the original URL is not visible to us in any
+	// way. Hardly surprising since net.DialContent is a generalized service. The only real
+	// solution is if the net/http package were to introduce its own dialer interface which
+	// passes scheme and port down to the Dial functions.
 
 	service := ""
 	switch port { // Map services that we can enable (which is only net/http for now)
@@ -73,20 +74,20 @@ func (t *cslb) dialContext(ctx context.Context, network, address string) (net.Co
 	now := time.Now()
 	ls.StartTime = now
 
-	// If the supplied context does not have a deadline, derive a timeout context and set it
-	// with our default deadline.
+	// If the supplied context does not have a deadline, derive WithTimeout context and set it
+	// with our configured timeout.
 
 	if deadline, ok := ctx.Deadline(); !ok || deadline.IsZero() {
 		subCtx, cancel := context.WithTimeout(ctx, t.InterceptTimeout)
 		defer cancel()
-		ctx = subCtx // The timeout context becomes our default context
+		ctx = subCtx // The WithTimeout context becomes our default context
 	}
 
 	cesrv := t.lookupSRV(ctx, now, service, network, host)
 	if t.PrintSRVLookup {
 		fmt.Println("cslb.dialContext:lookupSRV", service, network, host, cesrv.uniqueTargets(), cesrv)
 	}
-	if cesrv.uniqueTargets() == 0 { // Empty or non-existent SRV means use system
+	if cesrv.uniqueTargets() == 0 { // Empty or non-existent SRV means revert to system Dailer
 		ls.NoSRV++
 		return t.systemDialContext(ctx, network, address)
 	}
@@ -108,18 +109,18 @@ func (t *cslb) dialContext(ctx context.Context, network, address string) (net.Co
 	// NOT REACHED
 }
 
-// dialIterate iterates over bestTargets until we get a good connection, run out of time or run out
-// of unique targets. Because a failed target is put at the bottom of the pile in terms of isGood()
-// and nextDialAttempt it should only recur if bestTarget() has cycled thru *all* possible good
-// targets and all targets with a closer nextDialAttempt.
+// dialIterate iterates over bestTargets until it gets a good connection, runs out of time or runs
+// out of unique targets. Because a failed target is put at the bottom of the pile in terms of
+// isGood() and nextDialAttempt it should only recur if bestTarget() has cycled thru *all* possible
+// good targets and all targets with a closer nextDialAttempt.
 //
 // Results are returned via the result channel as we're started as a separate go-routine.
 func (t *cslb) dialIterate(ctx context.Context, cesrv *ceSRV, network, address string, result chan dialResult) {
-	var ls cslbStats // We do not set StartTime for nested stats
+	var ls cslbStats // Do not set StartTime for nested stats
 	var lastError error
 
 	defer t.addStats(&ls) // Transfer counters back to the parent when we're done
-	defer close(result)   // We're responsible for closing the dialResult channel
+	defer close(result)   // This function is responsible for closing the dialResult channel
 
 	dupes := make(map[string]bool) // Track targets to detect bestTarget() cycling
 	for {

@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// limitedResolver is a subset of net.Resolver that is used by cslb. The idea is to create a smaller
-// interface that's easier to mock.
+// limitedResolver is a subset of net.Resolver interface that is used by cslb. The idea is to create
+// a smaller interface that's easier to mock.
 type limitedResolver interface {
 	LookupSRV(ctx context.Context, service, proto, name string) (cname string, addrs []*net.SRV, err error)
 	LookupTXT(ctx context.Context, name string) ([]string, error)
@@ -64,7 +64,7 @@ type config struct {
 	HealthTTL      time.Duration // How long a target stays in the cache
 }
 
-// cslbStats holds all the state for the cslb package. See addStats() for typical usage.
+// cslbStats holds all statistics for the cslb package. See addStats() for typical usage.
 type cslbStats struct {
 	StartTime       time.Time
 	Duration        time.Duration // Total elapse time in DialContext
@@ -110,7 +110,8 @@ func (t *cslb) addStats(ls *cslbStats) {
 }
 
 // cslb is the main structure which holds all the state for the life of the application. The main
-// reason it's a struct rather than a big lump of globals is to make it easy to test.
+// reason it's a struct rather than a big lump of globals is to make it easy to test. Normally there
+// will only be one of these structs created per program.
 type cslb struct {
 	config
 
@@ -129,8 +130,8 @@ type cslb struct {
 	cslbStats
 }
 
-// newCslb is the cslb constructor. It must be used in preference to a raw cslb{} approach as there
-// are numerous variables which must be set for any cslb methods to work.
+// newCslb is the cslb constructor. It must be used in preference to a raw &cslb{} construction as
+// there are numerous variables which must be set for any cslb methods to work.
 func newCslb() *cslb {
 	t := &cslb{}
 	t.netResolver = net.DefaultResolver
