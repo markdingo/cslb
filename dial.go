@@ -87,7 +87,7 @@ func (t *cslb) dialContext(ctx context.Context, network, address string) (net.Co
 		fmt.Println("cslb.dialContext:lookupSRV", service, network, host, cesrv.uniqueTargets(), cesrv)
 	}
 	if cesrv.uniqueTargets() == 0 { // Empty or non-existent SRV means use system
-		ls.NoPTR++
+		ls.NoSRV++
 		return t.systemDialContext(ctx, network, address)
 	}
 

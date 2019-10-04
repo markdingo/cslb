@@ -62,7 +62,7 @@ const (
 <table border=1>
 <tr><th align=left>Intercepted calls to DialContext</th><td align=right>{{.DialContext}}</td></tr>
 <tr><th align=left>Host or service don't match or interception disabled</th><td align=right>{{.MissHostService}}</td></tr>
-<tr><th align=left>Times PTR lookup returned zero targets</th><td align=right>{{.NoPTR}}</td></tr>
+<tr><th align=left>Times SRV lookup returned zero targets</th><td align=right>{{.NoSRV}}</td></tr>
 <tr><th align=left>Calls to bestTarget()</th><td align=right>{{.BestTarget}}</td></tr>
 <tr><th align=left>Times when all targets failed</th><td align=right>{{.DupesStopped}}</td></tr>
 <tr><th align=left>system DialContext returned a good connection</th><td align=right>{{.GoodDials}}</td></tr>

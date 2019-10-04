@@ -70,7 +70,7 @@ type cslbStats struct {
 	Duration        time.Duration // Total elapse time in DialContext
 	DialContext     int           // intercepted calls to DialContext
 	MissHostService int           // Host or service don't match or interception disabled
-	NoPTR           int           // Times PTR lookup returned zero targets
+	NoSRV           int           // Times SRV lookup returned zero targets
 	BestTarget      int           // Calls to bestTarget()
 	DupesStopped    int           // Times that a dupe target stopped the bestTarget() iteration (all failed)
 	GoodDials       int           // system DialContext returned a good connection
@@ -101,7 +101,7 @@ func (t *cslb) addStats(ls *cslbStats) {
 
 	t.DialContext += ls.DialContext
 	t.MissHostService += ls.MissHostService
-	t.NoPTR += ls.NoPTR
+	t.NoSRV += ls.NoSRV
 	t.BestTarget += ls.BestTarget
 	t.DupesStopped += ls.DupesStopped
 	t.GoodDials += ls.GoodDials
