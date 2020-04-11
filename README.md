@@ -9,7 +9,7 @@ server-side load-balancers.
 In many cases the only action needed to take advantage of cslb is to import the package and add an
 SRV entry to your DNS. At that point, on behalf of your application, cslb automatically deals with
 failed servers and spreads load across serving targets according to your load-distribution rules. In
-addition, once you have cslb in place you can also run a `canary` alerting service which can
+addition, once you have cslb in place you can also run a "canary" alerting service which can
 notify you when clients are failing to reach their correct services.
 
 The primary goal of cslb is to make client-side load-balancing a no-brainer for your Go application.
@@ -35,7 +35,7 @@ compiler. Cslb requires Go 1.12.x or greater.
 
 To take advantage of cslb a program simply imports the package at which point cslb automatically
 starts performing client-side load-balancing by over-riding the `DialContext` of the
-`http.DefaultTransport`. If the program uses its own http.Transport then its `DialContext` needs to
+`http.DefaultTransport`. If the program uses its own `http.Transport` then its `DialContext` needs to
 be similarly replaced. Here is the before and after code which shows the application changes needed:
 
 ### Before
@@ -65,9 +65,11 @@ be similarly replaced. Here is the before and after code which shows the applica
         ...
 ```
 
-and that's it! One line of import code and no changes to application code fetching HTTP
-resources. The package documentation describes what to do if your applications use its own
-`http.Transport`. Essentially you have to enable cslb for that Transport.
+and that's it!
+
+One line of import code and no changes to application code fetching HTTP resources. The package
+documentation describes what to do if your applications use its own `http.Transport`. Essentially
+you have to enable cslb for that Transport.
 
 ### SRV Resource Records
 
