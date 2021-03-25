@@ -22,7 +22,10 @@ The primary goal of cslb is to make client-side load-balancing a no-brainer for 
 
 ### Installation
 
-Cslb is a standard Go package installed in the usual way:
+Cslb is a standard Go package thus if your program is go-module aware (which is to say
+you've run "go mod init") then cslb is pulled in automatically the first time you compile
+your program. If your program is not module-aware you can get this package the old way
+with:
 
 ```sh
 $ go get -u github.com/markdingo/cslb
