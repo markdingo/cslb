@@ -97,7 +97,7 @@ priority. The package documentation shows how this works.
 No server-side changes are required to use cslb - apart for possibly dispensing with your
 server-side load-balancers! You can even use cslb-enabled applications on third-party services with
 appropriate DNS finagling. It's also possible to use cslb in conjunction with an existing
-server-side load-balancer deployment by making the load-balancers targets in an SRV RR.
+server-side load-balancer deployment by placing the load-balancers targets in an SRV RR.
 
 ### Active Health Checks
 
