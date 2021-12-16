@@ -2,7 +2,7 @@ package cslb
 
 const (
 	// Version is auto-generated from ChangeLog.md
-	Version = "v0.1.0"
+	Version = "v1.0.0"
 	// ReleaseDate is also auto-generated from ChangeLog.md
-	ReleaseDate = "2021-03-21"
+	ReleaseDate = "2021-12-16"
 )

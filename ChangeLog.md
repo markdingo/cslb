@@ -1,4 +1,7 @@
 # cslb Change Log
+### v1.0.0 -- 2021-12-16
+  * Move from Travis to github actions
+  * Tag package
 ### v0.1.0 -- 2021-03-21
   * Added go.mod
   * Bumped travis upper go version to 1.16
