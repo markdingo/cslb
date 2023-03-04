@@ -1,4 +1,6 @@
 # cslb Change Log
+### v1.1.0 -- 2023-03-05
+  * Incorporate all minor package changes since v1.0.0
 ### v1.0.0 -- 2021-12-16
   * Move from Travis to github actions
   * Tag package
