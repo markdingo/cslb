@@ -14,8 +14,7 @@ notify you when clients are failing to reach their correct services.
 
 The primary goal of `cslb` is to make client-side load-balancing a no-brainer for your Go application.
 
-[![Build](https://github.com/markdingo/cslb/actions/workflows/build.yml/badge.svg)](https://github.com/markdingo/cslb/actions/workflows/build.yml)
-[![Test](https://github.com/markdingo/cslb/actions/workflows/test.yml/badge.svg)](https://github.com/markdingo/cslb/actions/workflows/test.yml)
+[![Build](https://github.com/markdingo/cslb/actions/workflows/go.yml/badge.svg)](https://github.com/markdingo/cslb/actions/workflows/go.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/markdingo/cslb)](https://goreportcard.com/report/github.com/markdingo/cslb)
 [![codecov](https://codecov.io/gh/markdingo/cslb/branch/main/graph/badge.svg)](https://codecov.io/gh/markdingo/cslb)
 [![](https://godoc.org/github.com/markdingo/cslb?status.svg)](https://godoc.org/github.com/markdingo/cslb)
