@@ -50,6 +50,8 @@ type config struct {
 	DisableHealthChecks  bool // "H"
 	AllowNumericServices bool // "N"
 
+	ServiceName string // Name of the service for SRV Lookup
+
 	StatusServerAddress   string // Listen address of status server
 	StatusServerTemplates string // filepath.Glob of replacement templates for status server
 
@@ -195,6 +197,7 @@ func newCslb() *cslb {
 
 	t.StatusServerAddress = os.Getenv(cslbEnvPrefix + "listen")
 	t.StatusServerTemplates = os.Getenv(cslbEnvPrefix + "templates")
+	t.ServiceName = os.Getenv(cslbEnvPrefix + "service_name")
 
 	t.HealthCheckFrequency = getAndParseDuration(cslbEnvPrefix+"hc_freq", t.HealthCheckFrequency)
 	t.InterceptTimeout = getAndParseDuration(cslbEnvPrefix+"timeout", t.InterceptTimeout)

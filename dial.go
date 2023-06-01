@@ -53,14 +53,18 @@ func (t *cslb) dialContext(ctx context.Context, network, address string) (net.Co
 	// passes scheme and port down to the Dial functions.
 
 	service := ""
-	switch port { // Map services that we can enable (which is only net/http for now)
-	case "80":
-		service = "http"
-	case "443":
-		service = "https"
-	default:
-		if t.AllowNumericServices { // Are we allowed to try _1443._tcp.$domain ?
-			service = port
+	if t.ServiceName != "" {
+		service = t.ServiceName
+	} else {
+		switch port { // Map services that we can enable (which is only net/http for now)
+		case "80":
+			service = "http"
+		case "443":
+			service = "https"
+		default:
+			if t.AllowNumericServices { // Are we allowed to try _1443._tcp.$domain ?
+				service = port
+			}
 		}
 	}
 
