@@ -13,42 +13,41 @@ service at any time.
 No server-side changes are required at all - apart for possibly dispensing with your server-side
 load-balancers!
 
-
-DEFAULT USAGE
+# DEFAULT USAGE
 
 Importing cslb automatically enables interception for http.DefaultTransport. In this program
 snippet:
 
- import (
-         "net/http"
-         _ "github.com/markdingo/cslb"
- )
+	import (
+	        "net/http"
+	        _ "github.com/markdingo/cslb"
+	)
 
- func main() {
-        resp, err := http.Get("http://example.net/resource")
+	func main() {
+	       resp, err := http.Get("http://example.net/resource")
 
 the Dial Request made by http.Get is intercepted and processed by cslb.
 
-NON DEFAULT USAGE
+# NON DEFAULT USAGE
 
 If the application uses its own http.Transport then cslb processing needs to be activated by calling
 the cslb.Enable() function, i.e.:
 
- import (
-         "net/http"
-         "github.com/markdingo/cslb"
- )
+	import (
+	        "net/http"
+	        "github.com/markdingo/cslb"
+	)
 
- func main() {
-         myTransport := http.Transport{...}
-         cslb.Enable(myTransport)
-         client := &http.Client{Transport: myTransport}
-         resp, err := client.Get("http://mydomain/resource")
-         ...
+	func main() {
+	        myTransport := http.Transport{...}
+	        cslb.Enable(myTransport)
+	        client := &http.Client{Transport: myTransport}
+	        resp, err := client.Get("http://mydomain/resource")
+	        ...
 
 The cslb.Enable() function replaces http.Transport.DialContext with its own intercept function.
 
-WHEN TO USE CSLB
+# WHEN TO USE CSLB
 
 Server-side load-balancers are no panacea. They add deployment and diagnostic complexity, cost,
 throughput constraints and become an additional point of possible failure.
@@ -61,8 +60,7 @@ significant resource drain.
 Cslb can be used to load-balance across geographically dispersed targets or where "hot stand-by"
 systems are purposely deployed on diverse infrastructure.
 
-
-DNS ACTIVATION
+# DNS ACTIVATION
 
 When cslb intercepts a http.Transport Dial Request to port 80 or port 443 it looks up SRV RRs as
 prescribed by RFC2782. That is, _http._tcp.$domain and _https._tcp.$domain respectively. Cslb
@@ -74,15 +72,14 @@ Cslb caches the SRV RRs (or their non-existence) as well as the result of Dial R
 targets to optimize subequent intercepted calls and the selection of preferred targets. If no SRV
 RRs exist, cslb passes the Dial Request on to net.DialContext.
 
-RULES OF INTERCEPTION
+# RULES OF INTERCEPTION
 
 Cslb has specific rules about when interception occurs. It normally only considers intercepting port
 80 and port 443 however if the "cslb_allports" environment variable is set, cslb intercepts
 non-standard HTTP ports and maps them to numeric service names. For example http://example.net:8080
 gets mapped to _8080._tcp.example.net as the SRV name to resolve.
 
-
-ACTIVE HEALTH CHECKS
+# ACTIVE HEALTH CHECKS
 
 While cslb runs passively by caching the results of previous Dial Requests, it can also run actively
 by periodically performing health checks on targets. This is useful as an administrator can control
@@ -108,8 +105,7 @@ unavailable.
 Active health checks cease once a target becomes idle for too long and health check Dial Requests
 are *not* get intercepted by cslb.
 
-
-CONVERTING A SITE TO CSLB
+# CONVERTING A SITE TO CSLB
 
 If your current service exists on a single server called "s1.example.net" and you want to spread the
 load across additional servers "s2.example.net" and "s3.example.net" and assuming you've added the
@@ -117,35 +113,35 @@ load across additional servers "s2.example.net" and "s3.example.net" and assumin
 
 Current DNS
 
- s1.example.net.             IN A    172.16.254.1
-                             IN AAAA 2001:db8::1
+	s1.example.net.             IN A    172.16.254.1
+	                            IN AAAA 2001:db8::1
 
- s2.example.net.             IN A    172.16.254.2
-                             IN AAAA 2001:db8::2
+	s2.example.net.             IN A    172.16.254.2
+	                            IN AAAA 2001:db8::2
 
- s3.example.net.             IN A    172.16.254.3
-                             IN AAAA 2001:db8::3
+	s3.example.net.             IN A    172.16.254.3
+	                            IN AAAA 2001:db8::3
 
 Additional DNS
 
- _http._tcp.s1.example.net.  IN SRV  1 70 80 s1.example.net.
-                             IN SRV  1 30 80 s2.example.net.
-                             IN SRV  2 0 8080 s3.example.net.
+	_http._tcp.s1.example.net.  IN SRV  1 70 80 s1.example.net.
+	                            IN SRV  1 30 80 s2.example.net.
+	                            IN SRV  2 0 8080 s3.example.net.
 
- _80._cslb.s1.example.net.   IN TXT "http://healthchecker.example.com/s1"
- _80._cslb.s2.example.net.   IN TXT "http://healthchecker.example.com/s2"
- _8080._cslb.s3.example.net. IN TXT "http://s3.example.net/ok"
+	_80._cslb.s1.example.net.   IN TXT "http://healthchecker.example.com/s1"
+	_80._cslb.s2.example.net.   IN TXT "http://healthchecker.example.com/s2"
+	_8080._cslb.s3.example.net. IN TXT "http://s3.example.net/ok"
 
 A number of observations about this DNS setup:
 
- * "s1" and "s2" are the highest priority
- * "s3" is only ever considered if both "s1" and "s2" are not responding
- * On average 70 out of 100 requests will be directed to "s1"
- * Connections to "s3" are made on port 8080
- * The health check for "s3" is on the same system as the service
- * The heallth checks for "s1" and "s2" are on a centralized system
+  - "s1" and "s2" are the highest priority
+  - "s3" is only ever considered if both "s1" and "s2" are not responding
+  - On average 70 out of 100 requests will be directed to "s1"
+  - Connections to "s3" are made on port 8080
+  - The health check for "s3" is on the same system as the service
+  - The heallth checks for "s1" and "s2" are on a centralized system
 
-CACHE AGEING
+# CACHE AGEING
 
 Cslb maintains a cache of SRV lookups and the health status of targets. Cache entries automatically
 age out as a form of garbage collection. Removed cache entries stop any associated active health
@@ -156,54 +152,54 @@ The important point to note is that *all* values get periodically refreshed from
 persists internally forever regardless of the level of activity. This means you can be sure that any
 changes to your DNS will be noticed by cslb in due course.
 
-STATUS WEB PAGE
+# STATUS WEB PAGE
 
 Cslb optional runs a web server which presents internal statistics on its performance and
 activity. This web service has *no* access controls so it's best to only run it on a loopback
 address. Setting the environment variable "cslb_listen" to a listen address activates the status
 server. E.g.:
 
- $ cslb_listen=127.0.0.1:8081 ./myProgram
+	$ cslb_listen=127.0.0.1:8081 ./myProgram
 
-RUN TIME CONTROLS
+# RUN TIME CONTROLS
 
 On initialization the cslb package examines the "cslb_options" environment variable for single
 letter options which have the following meaning:
 
- 'd' - Debug print dialContext calls
- 'h' - Debug print Health Check results
- 'i' - Debug print intercepted Dial Requests
- 'r' - Debug print system Dial Context results
- 's' - Debug print SRV Lookups
+	'd' - Debug print dialContext calls
+	'h' - Debug print Health Check results
+	'i' - Debug print intercepted Dial Requests
+	'r' - Debug print system Dial Context results
+	's' - Debug print SRV Lookups
 
- 'C' - Disable all Dial Request interception
- 'H' - Disable all health checks
- 'N' - Allow numeric service lookups for non-HTTP(S) ports
+	'C' - Disable all Dial Request interception
+	'H' - Disable all health checks
+	'N' - Allow numeric service lookups for non-HTTP(S) ports
 
 An example of how this might by used from a shell:
 
- $ cslb_options=dh ./yourProgram -options ...
+	$ cslb_options=dh ./yourProgram -options ...
 
 Many internal configuration values can be over-ridden with environment variables as shown in this
 table:
 
- +----------------+----------------------------------------+---------+---------------+
- | Variable Name  | Description                            | Default | Format        |
- +----------------+----------------------------------------+---------+---------------+
- | cslb_dial_veto | Target veto period after dial fails    | 1m      | time.Duration |
- | cslb_hc_freq   | Frequency of health checks per target  | 50s     | time.Duration |
- | cslb_hc_ok     | strings.Contains in health check body  | "OK"    | String        |
- | cslb_listen    | Listen address for status server       |         | address:port  |
- | cslb_nxd_ttl   | Cache lifetime for NXDOMAIN SRVs       | 20m     | time.Duration |
- | cslb_srv_ttl   | Cache lifetime for found SRVs          | 5m      | time.Duration |
- | cslb_tar_ttl   | Cache lifetime for dial Targets        | 5m      | time.Duration |
- | cslb_templates | Alternate status server html/templates |         | filepath.Glob |
- | cslb_timeout   | Default intercept Dial duration        | 1m      | time.Duration |
- +----------------+----------------------------------------+---------+---------------+
+	+----------------+----------------------------------------+---------+---------------+
+	| Variable Name  | Description                            | Default | Format        |
+	+----------------+----------------------------------------+---------+---------------+
+	| cslb_dial_veto | Target veto period after dial fails    | 1m      | time.Duration |
+	| cslb_hc_freq   | Frequency of health checks per target  | 50s     | time.Duration |
+	| cslb_hc_ok     | strings.Contains in health check body  | "OK"    | String        |
+	| cslb_listen    | Listen address for status server       |         | address:port  |
+	| cslb_nxd_ttl   | Cache lifetime for NXDOMAIN SRVs       | 20m     | time.Duration |
+	| cslb_srv_ttl   | Cache lifetime for found SRVs          | 5m      | time.Duration |
+	| cslb_tar_ttl   | Cache lifetime for dial Targets        | 5m      | time.Duration |
+	| cslb_templates | Alternate status server html/templates |         | filepath.Glob |
+	| cslb_timeout   | Default intercept Dial duration        | 1m      | time.Duration |
+	+----------------+----------------------------------------+---------+---------------+
 
 Any values which are invalid or fall outside a reasonable range are ignored.
 
-DETECTING A GOOD SERVICE
+# DETECTING A GOOD SERVICE
 
 Cslb only knows about the results of network connection attempts made by DialContext and the results
 of any configured health checks. If a service is accepting network connections but not responding to
@@ -218,7 +214,7 @@ In general, defining a failing service is a complicated matter that only the app
 understands. For this reason health checks are used as an intermediary which does understand
 application level failures and converts them to simple language which cslb groks.
 
-RECOMMENDED SETUP
+# RECOMMENDED SETUP
 
 While every service is different there are a few general guidelines which apply to most services
 when using cslb. First of all, run simple health checks if you can and configure them for use by
@@ -231,7 +227,7 @@ target. If this "canary" target is accessed by cslb clients it tells you they ar
 reaching their "real" targets. Being able to run a "canary" service is one of the side-benefits of
 cslb and SRVs.
 
-CAVEATS
+# CAVEATS
 
 Whan analyzing the Status Web Page or watching the Run Time Control output, observers need to be
 aware of caching by the http (and possibly other) packages. For example not every call to http.Get()
@@ -250,6 +246,5 @@ incidental to the core functionality of your application then maybe it doesn't m
 leave them be. Something to be aware of.
 
 -----
-
 */
 package cslb
