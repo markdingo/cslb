@@ -1,4 +1,6 @@
 all:
+
+help:
 	@echo Targets: clean, fmt, test and version
 
 .PHONY: clean
