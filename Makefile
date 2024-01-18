@@ -7,11 +7,16 @@ clean:
 
 .PHONY: fmt
 fmt:
-	gofmt -s -w `find . -name '*.go' -type f -print`
+	gofmt -s -w .
 
-.PHONY: test
-test:
+.PHONY: test tests
+test tests:
+	go vet ./...
 	go test ./...
+
+.PHONY: testrace
+testrace:
+	go test -race ./...
 
 .PHONY: version
 version:
