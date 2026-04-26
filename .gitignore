@@ -13,3 +13,6 @@
 
 # Dev environment
 .DS_Store
+
+# Local is never exported to public repos
+Local/
