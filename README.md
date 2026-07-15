@@ -118,6 +118,7 @@ If you have any problems using `cslb` or suggestions on how it can do a better j
 create an [issue](https://github.com/markdingo/cslb/issues) or email the
 [authors](https://github.com/markdingo/cslb/blob/master/AUTHORS) directly. This package can only
 improve with your feedback.
+AI-generated contributions are forbidden.
 
 ### Copyright and License
 
